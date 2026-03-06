@@ -6,139 +6,215 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portail Guichet Population</title>
 <style>
-body{font-family:Arial;margin:0;background:#eef3fb}
-header{background:#0b4ea2;color:white;padding:30px}
-h1{margin:0}
-.container{max-width:1200px;margin:auto;padding:20px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
-.card{background:white;border-radius:14px;padding:20px;box-shadow:0 6px 18px rgba(0,0,0,.1)}
-.card h3{color:#0b4ea2;margin-top:0}
-button{background:#ffd200;border:none;padding:12px 16px;border-radius:10px;font-weight:bold;cursor:pointer}
-.section{display:none;margin-top:20px}
+body{margin:0;font-family:Arial;background:#eef3fb;color:#1d2433}
+header{background:#0b4ea2;color:white;padding:25px}
+header h1{margin:0}
+.layout{display:flex;min-height:100vh}
+nav{
+width:240px;
+background:#ffffff;
+border-right:1px solid #dbe4f5;
+padding:20px;
+}
+nav h3{margin-top:0;color:#0b4ea2}
+nav button{
+width:100%;
+margin-bottom:10px;
+padding:12px;
+border:none;
+background:#ffd200;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
+main{flex:1;padding:30px}
+.section{display:none}
 .section.active{display:block}
-.question{font-weight:bold;margin-top:10px}
-.result{margin-top:15px;padding:15px;border-radius:10px}
+.card{
+background:white;
+border-radius:12px;
+padding:20px;
+box-shadow:0 6px 18px rgba(0,0,0,.1);
+max-width:700px;
+}
+.question{font-weight:bold;margin-top:15px}
+button.choice{
+margin-right:10px;
+margin-top:10px;
+padding:10px 14px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+}
+.yes{background:#ffd200}
+.no{background:#e8f0ff}
+.result{
+margin-top:15px;
+padding:15px;
+border-radius:8px;
+}
 .success{background:#dff6e5}
 .warning{background:#fff4cc}
 .danger{background:#fde4e4}
+footer{
+margin-top:40px;
+font-size:13px;
+color:#6b768d
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>Outil Guichet – Service Population</h1>
-<p>Assistant de décision interne</p>
+<h1>Portail interne – Service Population</h1>
+<p>Assistant de décision pour les guichets</p>
 </header>
 
-<div class="container">
+<div class="layout">
 
-<div class="grid">
+<nav>
+<h3>Matières</h3>
 
+<button onclick="openSection('adresse')">Adresse de référence</button>
+<button onclick="openSection('absence')">Absence temporaire</button>
+<button onclick="openSection('domiciliation')">Domiciliation</button>
+<button onclick="openSection('enquete')">Enquête de résidence</button>
+<button onclick="openSection('radiation')">Radiation d'office</button>
+<button onclick="openSection('etranger')">Départ à l'étranger</button>
+
+</nav>
+
+<main>
+
+<div id="adresse" class="section active">
 <div class="card">
-<h3>Adresse de référence</h3>
-<p>Vérifier si une adresse de référence est possible.</p>
-<button onclick="openSection('adresse')">Ouvrir</button>
-</div>
-
-<div class="card">
-<h3>Absence temporaire</h3>
-<p>Analyse rapide des conditions d'absence temporaire.</p>
-<button onclick="openSection('absence')">Ouvrir</button>
-</div>
-
-<div class="card">
-<h3>Domiciliation</h3>
-<p>Déterminer si la résidence principale peut être inscrite.</p>
-<button onclick="openSection('domiciliation')">Ouvrir</button>
-</div>
-
-<div class="card">
-<h3>Radiation d'office</h3>
-<p>Analyse des conditions de radiation.</p>
-<button onclick="openSection('radiation')">Ouvrir</button>
-</div>
-
-<div class="card">
-<h3>Enquête de résidence</h3>
-<p>Check-list pour enquête domiciliaire.</p>
-<button onclick="openSection('enquete')">Ouvrir</button>
-</div>
-
-<div class="card">
-<h3>Départ à l'étranger</h3>
-<p>Orientation administrative en cas de départ.</p>
-<button onclick="openSection('etranger')">Ouvrir</button>
-</div>
-
-</div>
-
-<div id="adresse" class="section">
 <h2>Adresse de référence</h2>
-<div class="question">La personne vit-elle réellement à l'adresse ?</div>
-<button onclick="result('adresse','danger','Résultat : domiciliation nécessaire')">Oui</button>
-<button onclick="result('adresse','success','Adresse de référence possible sous conditions')">Non</button>
+
+<div class="question">La personne réside-t-elle réellement à l'adresse ?</div>
+
+<button class="choice yes" onclick="showResult('adresse','danger','Résultat : domiciliation obligatoire')">Oui</button>
+<button class="choice no" onclick="showResult('adresse','success','Adresse de référence envisageable si catégorie autorisée')">Non</button>
+
 <div id="adresse_result"></div>
+
+<footer>
+Références : Instructions générales registres population – Focus adresse de référence.
+</footer>
 </div>
+</div>
+
 
 <div id="absence" class="section">
+<div class="card">
 <h2>Absence temporaire</h2>
+
 <div class="question">Absence supérieure à 3 mois ?</div>
-<button onclick="result('absence','success','Absence temporaire envisageable')">Oui</button>
-<button onclick="result('absence','warning','Absence trop courte')">Non</button>
+
+<button class="choice yes" onclick="showResult('absence','success','Absence temporaire possible')">Oui</button>
+<button class="choice no" onclick="showResult('absence','warning','Absence trop courte pour ce régime')">Non</button>
+
 <div id="absence_result"></div>
+
+<footer>
+Références : Instructions population – Focus absence temporaire.
+</footer>
 </div>
+</div>
+
 
 <div id="domiciliation" class="section">
+<div class="card">
 <h2>Domiciliation</h2>
+
 <div class="question">La personne habite réellement à l'adresse ?</div>
-<button onclick="result('domiciliation','success','Inscription en résidence principale possible')">Oui</button>
-<button onclick="result('domiciliation','warning','Enquête de résidence conseillée')">Incertain</button>
-<button onclick="result('domiciliation','danger','Refus possible')">Non</button>
+
+<button class="choice yes" onclick="showResult('domiciliation','success','Inscription en résidence principale possible')">Oui</button>
+<button class="choice no" onclick="showResult('domiciliation','warning','Enquête de résidence recommandée')">Incertain</button>
+<button class="choice no" onclick="showResult('domiciliation','danger','Refus possible')">Non</button>
+
 <div id="domiciliation_result"></div>
+
+<footer>
+Critère principal : situation de fait et centre des intérêts.
+</footer>
+</div>
 </div>
 
-<div id="radiation" class="section">
-<h2>Radiation d'office</h2>
-<div class="question">La personne est-elle introuvable et le logement inoccupé ?</div>
-<button onclick="result('radiation','success','Radiation possible')">Oui</button>
-<button onclick="result('radiation','warning','Enquête complémentaire nécessaire')">Incertain</button>
-<button onclick="result('radiation','danger','Radiation impossible')">Non</button>
-<div id="radiation_result"></div>
-</div>
 
 <div id="enquete" class="section">
+<div class="card">
 <h2>Enquête de résidence</h2>
-<p>Checklist :</p>
+
 <ul>
 <li>Présence régulière observée</li>
-<li>Voisins confirment la résidence</li>
-<li>Consommation énergétique cohérente</li>
+<li>Voisinage confirme la résidence</li>
 <li>Logement occupé</li>
+<li>Consommation énergie cohérente</li>
 </ul>
+
+<footer>
+Utiliser comme aide mémoire pour enquête domiciliaire.
+</footer>
 </div>
+</div>
+
+
+<div id="radiation" class="section">
+<div class="card">
+<h2>Radiation d'office</h2>
+
+<div class="question">La personne est-elle introuvable et le logement inoccupé ?</div>
+
+<button class="choice yes" onclick="showResult('radiation','success','Radiation possible')">Oui</button>
+<button class="choice no" onclick="showResult('radiation','warning','Enquête complémentaire')">Incertain</button>
+<button class="choice no" onclick="showResult('radiation','danger','Radiation impossible')">Non</button>
+
+<div id="radiation_result"></div>
+
+<footer>
+Références : instructions registres population – procédure radiation.
+</footer>
+</div>
+</div>
+
 
 <div id="etranger" class="section">
+<div class="card">
 <h2>Départ à l'étranger</h2>
+
 <div class="question">La personne déclare un départ définitif ?</div>
-<button onclick="result('etranger','success','Radiation vers l'étranger')">Oui</button>
-<button onclick="result('etranger','warning','Vérification nécessaire')">Incertain</button>
-<button onclick="result('etranger','danger','Maintien inscription Belgique')">Non</button>
+
+<button class="choice yes" onclick="showResult('etranger','success','Radiation vers l'étranger')">Oui</button>
+<button class="choice no" onclick="showResult('etranger','warning','Vérification nécessaire')">Incertain</button>
+<button class="choice no" onclick="showResult('etranger','danger','Maintien registre Belgique')">Non</button>
+
 <div id="etranger_result"></div>
+
+<footer>
+Vérifier les déclarations et pièces justificatives.
+</footer>
+</div>
 </div>
 
+
+</main>
 </div>
+
 
 <script>
+
 function openSection(id){
-document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'))
-document.getElementById(id).classList.add('active')
+document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"))
+document.getElementById(id).classList.add("active")
 }
 
-function result(section,type,text){
-const el=document.getElementById(section+'_result')
+function showResult(section,type,text){
+const el=document.getElementById(section+"_result")
 el.innerHTML='<div class="result '+type+'">'+text+'</div>'
 }
+
 </script>
 
 </body>
