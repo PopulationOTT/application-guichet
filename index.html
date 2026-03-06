@@ -1,221 +1,594 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portail Guichet Population</title>
-<style>
-body{margin:0;font-family:Arial;background:#eef3fb;color:#1d2433}
-header{background:#0b4ea2;color:white;padding:25px}
-header h1{margin:0}
-.layout{display:flex;min-height:100vh}
-nav{
-width:240px;
-background:#ffffff;
-border-right:1px solid #dbe4f5;
-padding:20px;
-}
-nav h3{margin-top:0;color:#0b4ea2}
-nav button{
-width:100%;
-margin-bottom:10px;
-padding:12px;
-border:none;
-background:#ffd200;
-border-radius:8px;
-font-weight:bold;
-cursor:pointer;
-}
-main{flex:1;padding:30px}
-.section{display:none}
-.section.active{display:block}
-.card{
-background:white;
-border-radius:12px;
-padding:20px;
-box-shadow:0 6px 18px rgba(0,0,0,.1);
-max-width:700px;
-}
-.question{font-weight:bold;margin-top:15px}
-button.choice{
-margin-right:10px;
-margin-top:10px;
-padding:10px 14px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-font-weight:bold;
-}
-.yes{background:#ffd200}
-.no{background:#e8f0ff}
-.result{
-margin-top:15px;
-padding:15px;
-border-radius:8px;
-}
-.success{background:#dff6e5}
-.warning{background:#fff4cc}
-.danger{background:#fde4e4}
-footer{
-margin-top:40px;
-font-size:13px;
-color:#6b768d
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portail guichet – version visuelle interactive</title>
+  <style>
+    :root{
+      --blue:#0b4ea2;
+      --blue-dark:#08356e;
+      --blue-soft:#edf4ff;
+      --yellow:#ffd200;
+      --yellow-soft:#fff8d6;
+      --green:#dff6e5;
+      --green-border:#3c9b5f;
+      --red:#fde4e4;
+      --red-border:#c64242;
+      --orange-soft:#fff1df;
+      --orange-border:#d98a22;
+      --text:#1d2433;
+      --muted:#61708a;
+      --card:#ffffff;
+      --line:#dde8fa;
+      --shadow:0 12px 32px rgba(11,78,162,.10);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      color:var(--text);
+      background:linear-gradient(180deg,#f7faff 0%, #eef4ff 100%);
+    }
+    .hero{
+      position:relative;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at 10% 20%, rgba(255,255,255,.18), transparent 22%),
+        radial-gradient(circle at 80% 10%, rgba(255,210,0,.20), transparent 20%),
+        linear-gradient(135deg,var(--blue-dark) 0%, var(--blue) 42%, #2670cf 72%, var(--yellow) 100%);
+      color:#fff;
+      padding:44px 20px 110px;
+    }
+    .hero:before,.hero:after{
+      content:"";
+      position:absolute;
+      border-radius:50%;
+      filter:blur(10px);
+      opacity:.18;
+    }
+    .hero:before{width:240px;height:240px;background:#fff;right:-60px;top:-60px}
+    .hero:after{width:180px;height:180px;background:var(--yellow);left:-30px;bottom:10px}
+    .wrap{max-width:1240px;margin:0 auto;position:relative;z-index:1}
+    .badge{
+      display:inline-block;
+      padding:9px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.24);
+      font-weight:bold;
+      font-size:13px;
+      letter-spacing:.2px;
+      margin-bottom:16px;
+    }
+    h1{
+      margin:0 0 12px;
+      font-size:clamp(34px,5vw,54px);
+      line-height:1.02;
+      max-width:950px;
+    }
+    .hero p{
+      margin:0;
+      max-width:900px;
+      font-size:19px;
+      line-height:1.6;
+      opacity:.98;
+    }
+    main{
+      max-width:1240px;
+      margin:-58px auto 48px;
+      padding:0 20px;
+      position:relative;
+      z-index:2;
+    }
+    .welcome{
+      background:rgba(255,255,255,.96);
+      border:1px solid rgba(255,255,255,.75);
+      box-shadow:var(--shadow);
+      border-radius:32px;
+      padding:28px;
+      backdrop-filter: blur(12px);
+      margin-bottom:22px;
+    }
+    .welcome-grid{
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:20px;
+      align-items:center;
+    }
+    @media (max-width:960px){.welcome-grid{grid-template-columns:1fr}}
+    .welcome h2{margin:0 0 8px;color:var(--blue);font-size:30px}
+    .welcome p{margin:0;color:var(--muted);line-height:1.6;font-size:16px}
+    .home-actions{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+    }
+    @media (max-width:860px){.home-actions{grid-template-columns:1fr 1fr}}
+    @media (max-width:580px){.home-actions{grid-template-columns:1fr}}
+    .home-card{
+      background:linear-gradient(180deg,#ffffff 0%, #f8fbff 100%);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+      box-shadow:0 6px 18px rgba(11,78,162,.07);
+    }
+    .home-card .kicker{
+      display:inline-block;
+      background:var(--yellow-soft);
+      color:var(--blue-dark);
+      border-radius:999px;
+      padding:6px 10px;
+      font-weight:bold;
+      font-size:12px;
+      margin-bottom:10px;
+    }
+    .home-card h3{margin:0 0 8px;color:var(--blue);font-size:22px}
+    .home-card p{margin:0 0 14px;color:var(--muted);line-height:1.55;font-size:14px}
+    .home-card button{
+      width:100%;
+      border:none;
+      background:var(--blue);
+      color:#fff;
+      font-weight:bold;
+      padding:13px 16px;
+      border-radius:16px;
+      cursor:pointer;
+      font-size:15px;
+    }
+    .tabs{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+    .tab-btn{
+      border:none;border-radius:999px;padding:14px 18px;font-weight:bold;
+      background:#fff;color:var(--blue-dark);cursor:pointer;box-shadow:0 8px 20px rgba(11,78,162,.08);
+    }
+    .tab-btn.active{background:var(--yellow)}
+    .panel{display:none}
+    .panel.active{display:block}
+    .grid{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:22px;
+    }
+    @media (max-width:1000px){.grid{grid-template-columns:1fr}}
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:24px;
+      border:1px solid #e8eef9;
+    }
+    .card h2{margin:0 0 8px;color:var(--blue);font-size:30px}
+    .lead{color:var(--muted);line-height:1.55;margin:0 0 22px}
+    .step{
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:18px;
+      margin:14px 0;
+      background:linear-gradient(180deg,#fbfdff 0%, #f7fbff 100%);
+    }
+    .step-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+    .num{
+      width:38px;height:38px;min-width:38px;border-radius:13px;background:var(--yellow);color:var(--blue-dark);
+      display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;box-shadow: inset 0 -2px 0 rgba(0,0,0,.08);
+    }
+    .question{font-size:20px;font-weight:bold;line-height:1.3;margin-top:4px}
+    .help{color:var(--muted);line-height:1.55;margin:0 0 12px 50px;font-size:14px}
+    .choices{display:flex;gap:10px;flex-wrap:wrap;margin-left:50px}
+    .choice{
+      border:none;border-radius:999px;padding:12px 16px;font-weight:bold;cursor:pointer;font-size:15px;
+      box-shadow:0 4px 10px rgba(0,0,0,.06)
+    }
+    .yes{background:var(--yellow);color:var(--blue-dark)}
+    .no{background:var(--blue-soft);color:var(--blue-dark)}
+    .alt{background:#f0f4fb;color:#24324f}
+    .choice.active{outline:3px solid rgba(11,78,162,.18)}
+    .hidden{display:none}
+    .result{margin-top:20px;border-radius:20px;padding:22px;border:2px solid transparent}
+    .result h3{margin:0 0 8px;font-size:28px}
+    .result p{margin:8px 0;line-height:1.6}
+    .success{background:var(--green);border-color:var(--green-border)}
+    .danger{background:var(--red);border-color:var(--red-border)}
+    .info{background:var(--yellow-soft);border-color:#d2b100}
+    .warning{background:var(--orange-soft);border-color:var(--orange-border)}
+    .mini-grid{display:grid;gap:14px}
+    .pill{
+      display:inline-block;background:var(--blue-soft);color:var(--blue-dark);
+      padding:7px 11px;border-radius:999px;font-size:12px;font-weight:bold;margin-bottom:9px
+    }
+    .box{background:#f9fbff;border:1px solid var(--line);border-radius:18px;padding:16px}
+    .box h3{margin:0 0 10px;color:var(--blue);font-size:20px}
+    ul{margin:10px 0 0 18px;padding:0;line-height:1.6}
+    li{margin:6px 0}
+    .duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:650px){
+      .duo{grid-template-columns:1fr}
+      .choices,.help{margin-left:0}
+      .question{font-size:18px}
+    }
+    .cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+    .footer-note{margin-top:16px;color:var(--muted);font-size:13px;line-height:1.6}
+    .small{font-size:14px;color:var(--muted)}
+  </style>
 </head>
-
 <body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="badge">Portail interne – Service population</div>
+      <h1>Portail guichet visuel<br>avec assistants à questions multiples</h1>
+      <p>Retour au style visuel de la première version, avec plusieurs questions successives dans chaque matière pour aider à orienter rapidement les dossiers au guichet.</p>
+    </div>
+  </header>
 
-<header>
-<h1>Portail interne – Service Population</h1>
-<p>Assistant de décision pour les guichets</p>
-</header>
+  <main>
+    <section class="welcome">
+      <div class="welcome-grid">
+        <div>
+          <h2>Choisir une matière</h2>
+          <p>Chaque module reprend un assistant de décision progressif, avec plusieurs questions, un résultat immédiat et un mémo pratique pour l’agent.</p>
+        </div>
+        <div class="home-actions">
+          <div class="home-card"><div class="kicker">Module 1</div><h3>Adresse de référence</h3><p>Qualification entre domiciliation, adresse de référence ou contrôle complémentaire.</p><button onclick="openTab('adresse')">Ouvrir</button></div>
+          <div class="home-card"><div class="kicker">Module 2</div><h3>Absence temporaire</h3><p>Conditions, durée, dérogations et orientation administrative.</p><button onclick="openTab('absence')">Ouvrir</button></div>
+          <div class="home-card"><div class="kicker">Module 3</div><h3>Domiciliation</h3><p>Présence réelle, centre des intérêts et preuves disponibles.</p><button onclick="openTab('domiciliation')">Ouvrir</button></div>
+          <div class="home-card"><div class="kicker">Module 4</div><h3>Enquête de résidence</h3><p>Grille rapide d’analyse de l’occupation réelle du logement.</p><button onclick="openTab('enquete')">Ouvrir</button></div>
+          <div class="home-card"><div class="kicker">Module 5</div><h3>Radiation d’office</h3><p>Repères pour distinguer radiation possible ou enquête complémentaire.</p><button onclick="openTab('radiation')">Ouvrir</button></div>
+          <div class="home-card"><div class="kicker">Module 6</div><h3>Départ à l’étranger</h3><p>Orientation du dossier selon le caractère définitif du départ.</p><button onclick="openTab('etranger')">Ouvrir</button></div>
+        </div>
+      </div>
+    </section>
 
-<div class="layout">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="adresse">Adresse de référence</button>
+      <button class="tab-btn" data-tab="absence">Absence temporaire</button>
+      <button class="tab-btn" data-tab="domiciliation">Domiciliation</button>
+      <button class="tab-btn" data-tab="enquete">Enquête de résidence</button>
+      <button class="tab-btn" data-tab="radiation">Radiation d’office</button>
+      <button class="tab-btn" data-tab="etranger">Départ à l’étranger</button>
+    </div>
 
-<nav>
-<h3>Matières</h3>
+    <!-- Adresse -->
+    <section id="panel-adresse" class="panel active">
+      <div class="grid">
+        <section class="card">
+          <h2>Adresse de référence</h2>
+          <p class="lead">Répondez aux questions dans l’ordre. Le résultat s’affiche automatiquement.</p>
 
-<button onclick="openSection('adresse')">Adresse de référence</button>
-<button onclick="openSection('absence')">Absence temporaire</button>
-<button onclick="openSection('domiciliation')">Domiciliation</button>
-<button onclick="openSection('enquete')">Enquête de résidence</button>
-<button onclick="openSection('radiation')">Radiation d'office</button>
-<button onclick="openSection('etranger')">Départ à l'étranger</button>
+          <div class="step" id="a-step1">
+            <div class="step-head"><div class="num">1</div><div class="question">La personne vit-elle réellement à l’adresse du particulier ?</div></div>
+            <p class="help">Si elle y séjourne de manière stable, habituelle ou permanente, on s’oriente vers une résidence principale.</p>
+            <div class="choices">
+              <button class="choice yes" data-group="a" data-step="1" data-value="oui">Oui</button>
+              <button class="choice no" data-group="a" data-step="1" data-value="non">Non</button>
+            </div>
+          </div>
 
-</nav>
+          <div class="step hidden" id="a-step2">
+            <div class="step-head"><div class="num">2</div><div class="question">La personne relève-t-elle d’une catégorie autorisée ?</div></div>
+            <p class="help">Par exemple : demeure mobile, sans-abri, détenu dans certains cas, raisons professionnelles.</p>
+            <div class="choices">
+              <button class="choice yes" data-group="a" data-step="2" data-value="oui">Oui</button>
+              <button class="choice no" data-group="a" data-step="2" data-value="non">Non</button>
+            </div>
+          </div>
 
-<main>
+          <div class="step hidden" id="a-step3">
+            <div class="step-head"><div class="num">3</div><div class="question">Le particulier accepte-t-il de servir d’adresse de référence ?</div></div>
+            <p class="help">Un accord écrit est nécessaire.</p>
+            <div class="choices">
+              <button class="choice yes" data-group="a" data-step="3" data-value="oui">Oui</button>
+              <button class="choice no" data-group="a" data-step="3" data-value="non">Non</button>
+            </div>
+          </div>
 
-<div id="adresse" class="section active">
-<div class="card">
-<h2>Adresse de référence</h2>
+          <div class="step hidden" id="a-step4">
+            <div class="step-head"><div class="num">4</div><div class="question">La commune dispose-t-elle d’éléments suffisants pour contrôler la situation ?</div></div>
+            <p class="help">Pièces justificatives, avis utile, contrôle du dossier.</p>
+            <div class="choices">
+              <button class="choice yes" data-group="a" data-step="4" data-value="oui">Oui</button>
+              <button class="choice alt" data-group="a" data-step="4" data-value="incertain">À vérifier</button>
+              <button class="choice no" data-group="a" data-step="4" data-value="non">Non</button>
+            </div>
+          </div>
 
-<div class="question">La personne réside-t-elle réellement à l'adresse ?</div>
+          <div id="a-result" class="result hidden"></div>
+          <div class="cta"><button class="choice alt" onclick="resetFlow('a',4)">Réinitialiser</button><button class="choice no" onclick="window.print()">Imprimer</button></div>
+        </section>
 
-<button class="choice yes" onclick="showResult('adresse','danger','Résultat : domiciliation obligatoire')">Oui</button>
-<button class="choice no" onclick="showResult('adresse','success','Adresse de référence envisageable si catégorie autorisée')">Non</button>
+        <aside class="mini-grid">
+          <section class="card"><div class="pill">Mémo</div><div class="box"><ul><li>Pas de résidence principale effective</li><li>Catégorie autorisée</li><li>Accord écrit du particulier</li><li>Usage administratif de l’adresse</li><li>Contrôle possible par la commune</li></ul></div></section>
+          <section class="card"><div class="pill">Repère</div><div class="box"><h3>Règle d’or</h3><div class="small">Si la personne vit réellement à l’adresse, on s’oriente d’abord vers la domiciliation.</div></div></section>
+        </aside>
+      </div>
+    </section>
 
-<div id="adresse_result"></div>
+    <!-- Absence -->
+    <section id="panel-absence" class="panel">
+      <div class="grid">
+        <section class="card">
+          <h2>Absence temporaire</h2>
+          <p class="lead">Répondez aux questions dans l’ordre.</p>
 
-<footer>
-Références : Instructions générales registres population – Focus adresse de référence.
-</footer>
-</div>
-</div>
+          <div class="step" id="b-step1">
+            <div class="step-head"><div class="num">1</div><div class="question">L’absence dure-t-elle au moins 3 mois ?</div></div>
+            <p class="help">Le régime est présenté ici à partir de 3 mois d’absence.</p>
+            <div class="choices"><button class="choice yes" data-group="b" data-step="1" data-value="oui">Oui</button><button class="choice no" data-group="b" data-step="1" data-value="non">Non</button></div>
+          </div>
 
+          <div class="step hidden" id="b-step2">
+            <div class="step-head"><div class="num">2</div><div class="question">La personne conserve-t-elle une résidence principale réintégrable à tout moment ?</div></div>
+            <p class="help">Logement conservé et retour possible immédiatement.</p>
+            <div class="choices"><button class="choice yes" data-group="b" data-step="2" data-value="oui">Oui</button><button class="choice no" data-group="b" data-step="2" data-value="non">Non</button><button class="choice alt" data-group="b" data-step="2" data-value="incertain">À vérifier</button></div>
+          </div>
 
-<div id="absence" class="section">
-<div class="card">
-<h2>Absence temporaire</h2>
+          <div class="step hidden" id="b-step3">
+            <div class="step-head"><div class="num">3</div><div class="question">L’absence est-elle déterminée et réellement temporaire ?</div></div>
+            <p class="help">Une absence indéterminée ne relève pas du régime.</p>
+            <div class="choices"><button class="choice yes" data-group="b" data-step="3" data-value="oui">Oui</button><button class="choice no" data-group="b" data-step="3" data-value="non">Non</button><button class="choice alt" data-group="b" data-step="3" data-value="incertain">À vérifier</button></div>
+          </div>
 
-<div class="question">Absence supérieure à 3 mois ?</div>
+          <div class="step hidden" id="b-step4">
+            <div class="step-head"><div class="num">4</div><div class="question">La durée entre-t-elle dans le régime normal ou une dérogation admise ?</div></div>
+            <p class="help">Régime normal : 1 an renouvelable une fois.</p>
+            <div class="choices"><button class="choice yes" data-group="b" data-step="4" data-value="oui">Oui</button><button class="choice no" data-group="b" data-step="4" data-value="non">Non</button><button class="choice alt" data-group="b" data-step="4" data-value="incertain">À vérifier</button></div>
+          </div>
 
-<button class="choice yes" onclick="showResult('absence','success','Absence temporaire possible')">Oui</button>
-<button class="choice no" onclick="showResult('absence','warning','Absence trop courte pour ce régime')">Non</button>
+          <div id="b-result" class="result hidden"></div>
+          <div class="cta"><button class="choice alt" onclick="resetFlow('b',4)">Réinitialiser</button><button class="choice no" onclick="window.print()">Imprimer</button></div>
+        </section>
 
-<div id="absence_result"></div>
+        <aside class="mini-grid">
+          <section class="card"><div class="pill">Mémo</div><div class="box"><ul><li>Absence à partir de 3 mois</li><li>Résidence principale conservée</li><li>Retour possible</li><li>Intérêts suffisants</li><li>Durée déterminée</li></ul></div></section>
+          <section class="card"><div class="pill">Repère</div><div class="box"><h3>Durée</h3><div class="small">1 an, renouvelable une fois, sauf dérogation applicable.</div></div></section>
+        </aside>
+      </div>
+    </section>
 
-<footer>
-Références : Instructions population – Focus absence temporaire.
-</footer>
-</div>
-</div>
+    <!-- Domiciliation -->
+    <section id="panel-domiciliation" class="panel">
+      <div class="grid">
+        <section class="card">
+          <h2>Domiciliation</h2>
+          <p class="lead">Assistant de qualification de la résidence principale.</p>
 
+          <div class="step" id="c-step1">
+            <div class="step-head"><div class="num">1</div><div class="question">La personne habite-t-elle réellement à l’adresse ?</div></div>
+            <p class="help">Présence stable, régulière ou habituelle.</p>
+            <div class="choices"><button class="choice yes" data-group="c" data-step="1" data-value="oui">Oui</button><button class="choice alt" data-group="c" data-step="1" data-value="incertain">Incertain</button><button class="choice no" data-group="c" data-step="1" data-value="non">Non</button></div>
+          </div>
 
-<div id="domiciliation" class="section">
-<div class="card">
-<h2>Domiciliation</h2>
+          <div class="step hidden" id="c-step2">
+            <div class="step-head"><div class="num">2</div><div class="question">Le centre des intérêts de la personne semble-t-il situé à cette adresse ?</div></div>
+            <p class="help">Vie quotidienne, effets personnels, habitudes de vie.</p>
+            <div class="choices"><button class="choice yes" data-group="c" data-step="2" data-value="oui">Oui</button><button class="choice alt" data-group="c" data-step="2" data-value="incertain">Incertain</button><button class="choice no" data-group="c" data-step="2" data-value="non">Non</button></div>
+          </div>
 
-<div class="question">La personne habite réellement à l'adresse ?</div>
+          <div class="step hidden" id="c-step3">
+            <div class="step-head"><div class="num">3</div><div class="question">Des éléments objectifs confirment-ils l’occupation du logement ?</div></div>
+            <p class="help">Observation, dossier, enquête ou autres éléments concrets.</p>
+            <div class="choices"><button class="choice yes" data-group="c" data-step="3" data-value="oui">Oui</button><button class="choice alt" data-group="c" data-step="3" data-value="incertain">À compléter</button><button class="choice no" data-group="c" data-step="3" data-value="non">Non</button></div>
+          </div>
 
-<button class="choice yes" onclick="showResult('domiciliation','success','Inscription en résidence principale possible')">Oui</button>
-<button class="choice no" onclick="showResult('domiciliation','warning','Enquête de résidence recommandée')">Incertain</button>
-<button class="choice no" onclick="showResult('domiciliation','danger','Refus possible')">Non</button>
+          <div id="c-result" class="result hidden"></div>
+          <div class="cta"><button class="choice alt" onclick="resetFlow('c',3)">Réinitialiser</button><button class="choice no" onclick="window.print()">Imprimer</button></div>
+        </section>
 
-<div id="domiciliation_result"></div>
+        <aside class="mini-grid">
+          <section class="card"><div class="pill">Mémo</div><div class="box"><ul><li>Situation de fait</li><li>Occupation réelle</li><li>Centre des intérêts</li><li>Indices concordants</li></ul></div></section>
+          <section class="card"><div class="pill">Repère</div><div class="box"><h3>Orientation</h3><div class="small">En cas d’incertitude, privilégier l’enquête de résidence plutôt qu’une décision trop rapide.</div></div></section>
+        </aside>
+      </div>
+    </section>
 
-<footer>
-Critère principal : situation de fait et centre des intérêts.
-</footer>
-</div>
-</div>
+    <!-- Enquête -->
+    <section id="panel-enquete" class="panel">
+      <div class="grid">
+        <section class="card">
+          <h2>Enquête de résidence</h2>
+          <p class="lead">Grille d’analyse progressive avant conclusion.</p>
 
+          <div class="step" id="d-step1">
+            <div class="step-head"><div class="num">1</div><div class="question">Des éléments concrets indiquent-ils une présence régulière ?</div></div>
+            <p class="help">Passages réguliers, traces d’occupation, présence habituelle.</p>
+            <div class="choices"><button class="choice yes" data-group="d" data-step="1" data-value="oui">Oui</button><button class="choice alt" data-group="d" data-step="1" data-value="incertain">Incertain</button><button class="choice no" data-group="d" data-step="1" data-value="non">Non</button></div>
+          </div>
 
-<div id="enquete" class="section">
-<div class="card">
-<h2>Enquête de résidence</h2>
+          <div class="step hidden" id="d-step2">
+            <div class="step-head"><div class="num">2</div><div class="question">Le logement paraît-il effectivement occupé ?</div></div>
+            <p class="help">Mobilier, occupation visible, utilisation normale.</p>
+            <div class="choices"><button class="choice yes" data-group="d" data-step="2" data-value="oui">Oui</button><button class="choice alt" data-group="d" data-step="2" data-value="incertain">Incertain</button><button class="choice no" data-group="d" data-step="2" data-value="non">Non</button></div>
+          </div>
 
-<ul>
-<li>Présence régulière observée</li>
-<li>Voisinage confirme la résidence</li>
-<li>Logement occupé</li>
-<li>Consommation énergie cohérente</li>
-</ul>
+          <div class="step hidden" id="d-step3">
+            <div class="step-head"><div class="num">3</div><div class="question">Les éléments recueillis sont-ils cohérents entre eux ?</div></div>
+            <p class="help">Pas de contradiction majeure entre observations et déclarations.</p>
+            <div class="choices"><button class="choice yes" data-group="d" data-step="3" data-value="oui">Oui</button><button class="choice alt" data-group="d" data-step="3" data-value="incertain">À compléter</button><button class="choice no" data-group="d" data-step="3" data-value="non">Non</button></div>
+          </div>
 
-<footer>
-Utiliser comme aide mémoire pour enquête domiciliaire.
-</footer>
-</div>
-</div>
+          <div id="d-result" class="result hidden"></div>
+          <div class="cta"><button class="choice alt" onclick="resetFlow('d',3)">Réinitialiser</button><button class="choice no" onclick="window.print()">Imprimer</button></div>
+        </section>
 
+        <aside class="mini-grid">
+          <section class="card"><div class="pill">Checklist</div><div class="box"><ul><li>Présence régulière</li><li>Logement occupé</li><li>Voisinage ou contexte cohérent</li><li>Éléments convergents</li></ul></div></section>
+          <section class="card"><div class="pill">Repère</div><div class="box"><h3>Prudence</h3><div class="small">Un seul indice isolé ne suffit pas toujours. Chercher un faisceau d’indices.</div></div></section>
+        </aside>
+      </div>
+    </section>
 
-<div id="radiation" class="section">
-<div class="card">
-<h2>Radiation d'office</h2>
+    <!-- Radiation -->
+    <section id="panel-radiation" class="panel">
+      <div class="grid">
+        <section class="card">
+          <h2>Radiation d’office</h2>
+          <p class="lead">Assistant progressif avant orientation du dossier.</p>
 
-<div class="question">La personne est-elle introuvable et le logement inoccupé ?</div>
+          <div class="step" id="e-step1">
+            <div class="step-head"><div class="num">1</div><div class="question">La personne est-elle introuvable à l’adresse déclarée ?</div></div>
+            <p class="help">Absence constatée ou impossibilité de la localiser sur place.</p>
+            <div class="choices"><button class="choice yes" data-group="e" data-step="1" data-value="oui">Oui</button><button class="choice alt" data-group="e" data-step="1" data-value="incertain">Incertain</button><button class="choice no" data-group="e" data-step="1" data-value="non">Non</button></div>
+          </div>
 
-<button class="choice yes" onclick="showResult('radiation','success','Radiation possible')">Oui</button>
-<button class="choice no" onclick="showResult('radiation','warning','Enquête complémentaire')">Incertain</button>
-<button class="choice no" onclick="showResult('radiation','danger','Radiation impossible')">Non</button>
+          <div class="step hidden" id="e-step2">
+            <div class="step-head"><div class="num">2</div><div class="question">Le logement paraît-il inoccupé ou utilisé par d’autres ?</div></div>
+            <p class="help">Occupation inexistante ou rupture manifeste avec l’adresse.</p>
+            <div class="choices"><button class="choice yes" data-group="e" data-step="2" data-value="oui">Oui</button><button class="choice alt" data-group="e" data-step="2" data-value="incertain">Incertain</button><button class="choice no" data-group="e" data-step="2" data-value="non">Non</button></div>
+          </div>
 
-<div id="radiation_result"></div>
+          <div class="step hidden" id="e-step3">
+            <div class="step-head"><div class="num">3</div><div class="question">Le dossier est-il suffisamment étayé pour conclure ?</div></div>
+            <p class="help">Éléments convergents et absence d’information contraire.</p>
+            <div class="choices"><button class="choice yes" data-group="e" data-step="3" data-value="oui">Oui</button><button class="choice alt" data-group="e" data-step="3" data-value="incertain">À compléter</button><button class="choice no" data-group="e" data-step="3" data-value="non">Non</button></div>
+          </div>
 
-<footer>
-Références : instructions registres population – procédure radiation.
-</footer>
-</div>
-</div>
+          <div id="e-result" class="result hidden"></div>
+          <div class="cta"><button class="choice alt" onclick="resetFlow('e',3)">Réinitialiser</button><button class="choice no" onclick="window.print()">Imprimer</button></div>
+        </section>
 
+        <aside class="mini-grid">
+          <section class="card"><div class="pill">Mémo</div><div class="box"><ul><li>Introuvable à l’adresse</li><li>Absence durable</li><li>Logement non occupé ou autre usage</li><li>Dossier étayé</li></ul></div></section>
+          <section class="card"><div class="pill">Repère</div><div class="box"><h3>Prudence</h3><div class="small">S’il subsiste un doute sérieux, compléter l’enquête avant d’aller plus loin.</div></div></section>
+        </aside>
+      </div>
+    </section>
 
-<div id="etranger" class="section">
-<div class="card">
-<h2>Départ à l'étranger</h2>
+    <!-- Etranger -->
+    <section id="panel-etranger" class="panel">
+      <div class="grid">
+        <section class="card">
+          <h2>Départ à l’étranger</h2>
+          <p class="lead">Assistant simple pour orienter le dossier.</p>
 
-<div class="question">La personne déclare un départ définitif ?</div>
+          <div class="step" id="f-step1">
+            <div class="step-head"><div class="num">1</div><div class="question">La personne annonce-t-elle un départ définitif ?</div></div>
+            <p class="help">Déclaration claire de départ hors Belgique.</p>
+            <div class="choices"><button class="choice yes" data-group="f" data-step="1" data-value="oui">Oui</button><button class="choice alt" data-group="f" data-step="1" data-value="incertain">Incertain</button><button class="choice no" data-group="f" data-step="1" data-value="non">Non</button></div>
+          </div>
 
-<button class="choice yes" onclick="showResult('etranger','success','Radiation vers l'étranger')">Oui</button>
-<button class="choice no" onclick="showResult('etranger','warning','Vérification nécessaire')">Incertain</button>
-<button class="choice no" onclick="showResult('etranger','danger','Maintien registre Belgique')">Non</button>
+          <div class="step hidden" id="f-step2">
+            <div class="step-head"><div class="num">2</div><div class="question">Le dossier comporte-t-il des éléments cohérents avec ce départ ?</div></div>
+            <p class="help">Informations, contexte ou pièces utiles.</p>
+            <div class="choices"><button class="choice yes" data-group="f" data-step="2" data-value="oui">Oui</button><button class="choice alt" data-group="f" data-step="2" data-value="incertain">À vérifier</button><button class="choice no" data-group="f" data-step="2" data-value="non">Non</button></div>
+          </div>
 
-<div id="etranger_result"></div>
+          <div class="step hidden" id="f-step3">
+            <div class="step-head"><div class="num">3</div><div class="question">Reste-t-il un lien de résidence principale en Belgique ?</div></div>
+            <p class="help">Vérifier s’il subsiste une installation principale en Belgique.</p>
+            <div class="choices"><button class="choice yes" data-group="f" data-step="3" data-value="oui">Oui</button><button class="choice no" data-group="f" data-step="3" data-value="non">Non</button><button class="choice alt" data-group="f" data-step="3" data-value="incertain">Incertain</button></div>
+          </div>
 
-<footer>
-Vérifier les déclarations et pièces justificatives.
-</footer>
-</div>
-</div>
+          <div id="f-result" class="result hidden"></div>
+          <div class="cta"><button class="choice alt" onclick="resetFlow('f',3)">Réinitialiser</button><button class="choice no" onclick="window.print()">Imprimer</button></div>
+        </section>
 
+        <aside class="mini-grid">
+          <section class="card"><div class="pill">Mémo</div><div class="box"><ul><li>Départ annoncé</li><li>Éléments cohérents</li><li>Absence de résidence principale en Belgique</li></ul></div></section>
+          <section class="card"><div class="pill">Repère</div><div class="box"><h3>Orientation</h3><div class="small">Si la situation reste floue, compléter le dossier avant de conclure à un départ définitif.</div></div></section>
+        </aside>
+      </div>
+    </section>
+  </main>
 
-</main>
-</div>
+  <script>
+    function openTab(tab){
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+      document.getElementById('panel-' + tab).classList.add('active');
+      document.querySelector('.tabs').scrollIntoView({behavior:'smooth', block:'start'});
+    }
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => openTab(btn.dataset.tab));
+    });
 
+    function setActive(group, step, value){
+      document.querySelectorAll(`[data-group="${group}"][data-step="${step}"]`).forEach(btn => btn.classList.toggle('active', btn.dataset.value === value));
+    }
+    function show(group, n){ document.getElementById(`${group}-step${n}`).classList.remove('hidden'); }
+    function hide(group, n){ document.getElementById(`${group}-step${n}`).classList.add('hidden'); }
 
-<script>
+    function resetFlow(group, maxStep){
+      for(let i=1;i<=maxStep;i++){
+        document.querySelectorAll(`[data-group="${group}"][data-step="${i}"]`).forEach(btn => btn.classList.remove('active'));
+        if(i>1) hide(group, i);
+      }
+      const res = document.getElementById(`${group}-result`);
+      res.className = 'result hidden';
+      res.innerHTML = '';
+      state[group] = {};
+    }
 
-function openSection(id){
-document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"))
-document.getElementById(id).classList.add("active")
-}
+    function render(group, type, title, html){
+      const res = document.getElementById(`${group}-result`);
+      res.className = `result ${type}`;
+      res.innerHTML = `<h3>${title}</h3>${html}`;
+    }
 
-function showResult(section,type,text){
-const el=document.getElementById(section+"_result")
-el.innerHTML='<div class="result '+type+'">'+text+'</div>'
-}
+    const state = {a:{}, b:{}, c:{}, d:{}, e:{}, f:{}};
 
-</script>
+    function handle(group, step, value){
+      state[group][step] = value;
+      setActive(group, step, value);
 
+      if(group === 'a'){
+        if(step===1){ resetTail('a',2,4); if(value==='non') show('a',2); if(value==='oui') render('a','danger','Résultat : domiciliation','<p>La personne semble vivre réellement à cette adresse.</p>'); }
+        if(step===2){ resetTail('a',3,4); if(value==='oui') show('a',3); if(value==='non') render('a','danger','Résultat : adresse de référence impossible','<p>La catégorie invoquée ne paraît pas autorisée.</p>'); }
+        if(step===3){ resetTail('a',4,4); if(value==='oui') show('a',4); if(value==='non') render('a','danger','Résultat : accord manquant','<p>Le particulier n’accepte pas l’adresse de référence.</p>'); }
+        if(step===4){ if(value==='oui') render('a','success','Résultat : adresse de référence envisageable','<p>Les conditions de base semblent réunies.</p>'); else render('a','info','Résultat : contrôle complémentaire nécessaire','<p>Le dossier doit être mieux étayé avant décision.</p>'); }
+      }
+
+      if(group === 'b'){
+        if(step===1){ resetTail('b',2,4); if(value==='oui') show('b',2); if(value==='non') render('b','warning','Résultat : seuil non atteint','<p>On n’est pas dans le cadre présenté ici.</p>'); }
+        if(step===2){ resetTail('b',3,4); if(value==='oui') show('b',3); if(value==='non') render('b','danger','Résultat : absence temporaire impossible','<p>La résidence principale ne paraît pas clairement conservée.</p>'); if(value==='incertain') render('b','info','Résultat : vérification nécessaire','<p>Il faut vérifier la résidence principale et la possibilité de retour.</p>'); }
+        if(step===3){ resetTail('b',4,4); if(value==='oui') show('b',4); if(value==='non') render('b','danger','Résultat : absence indéterminée','<p>L’absence ne paraît pas réellement temporaire.</p>'); if(value==='incertain') render('b','info','Résultat : précision nécessaire','<p>La durée doit être clarifiée.</p>'); }
+        if(step===4){ if(value==='oui') render('b','success','Résultat : absence temporaire envisageable','<p>Les conditions de base semblent réunies.</p>'); else if(value==='incertain') render('b','info','Résultat : dérogation à vérifier','<p>Il faut clarifier si une dérogation est applicable.</p>'); else render('b','danger','Résultat : hors durée admise','<p>Le dossier semble sortir du régime.</p>'); }
+      }
+
+      if(group === 'c'){
+        if(step===1){ resetTail('c',2,3); if(value==='oui' || value==='incertain') show('c',2); if(value==='non') render('c','danger','Résultat : domiciliation peu probable','<p>La présence réelle à l’adresse n’est pas démontrée.</p>'); }
+        if(step===2){ resetTail('c',3,3); if(value==='oui' || value==='incertain') show('c',3); if(value==='non') render('c','warning','Résultat : enquête complémentaire','<p>Le centre des intérêts ne paraît pas clairement établi.</p>'); }
+        if(step===3){ if(value==='oui') render('c','success','Résultat : domiciliation envisageable','<p>Les éléments vont dans le sens d’une résidence principale.</p>'); else if(value==='incertain') render('c','info','Résultat : enquête à compléter','<p>Le dossier doit être consolidé.</p>'); else render('c','danger','Résultat : refus possible','<p>Les éléments ne confirment pas l’occupation réelle.</p>'); }
+      }
+
+      if(group === 'd'){
+        if(step===1){ resetTail('d',2,3); if(value==='oui' || value==='incertain') show('d',2); if(value==='non') render('d','danger','Résultat : résidence non confirmée','<p>La présence régulière n’est pas démontrée.</p>'); }
+        if(step===2){ resetTail('d',3,3); if(value==='oui' || value==='incertain') show('d',3); if(value==='non') render('d','warning','Résultat : enquête fragile','<p>Le logement ne paraît pas clairement occupé.</p>'); }
+        if(step===3){ if(value==='oui') render('d','success','Résultat : résidence plausible','<p>Les indices sont cohérents et convergents.</p>'); else if(value==='incertain') render('d','info','Résultat : enquête complémentaire','<p>Il manque des éléments pour conclure.</p>'); else render('d','danger','Résultat : incohérences','<p>Les éléments recueillis ne permettent pas de confirmer la résidence.</p>'); }
+      }
+
+      if(group === 'e'){
+        if(step===1){ resetTail('e',2,3); if(value==='oui' || value==='incertain') show('e',2); if(value==='non') render('e','danger','Résultat : radiation impossible','<p>La personne n’est pas clairement absente de l’adresse.</p>'); }
+        if(step===2){ resetTail('e',3,3); if(value==='oui' || value==='incertain') show('e',3); if(value==='non') render('e','warning','Résultat : maintien probable','<p>Le logement ne paraît pas rompu avec l’adresse.</p>'); }
+        if(step===3){ if(value==='oui') render('e','success','Résultat : radiation envisageable','<p>Le dossier paraît suffisamment étayé.</p>'); else if(value==='incertain') render('e','info','Résultat : enquête complémentaire','<p>Il faut encore consolider le dossier.</p>'); else render('e','danger','Résultat : base insuffisante','<p>Le dossier ne permet pas une telle conclusion à ce stade.</p>'); }
+      }
+
+      if(group === 'f'){
+        if(step===1){ resetTail('f',2,3); if(value==='oui' || value==='incertain') show('f',2); if(value==='non') render('f','danger','Résultat : maintien en Belgique','<p>Le départ définitif n’est pas établi.</p>'); }
+        if(step===2){ resetTail('f',3,3); if(value==='oui' || value==='incertain') show('f',3); if(value==='non') render('f','warning','Résultat : dossier à vérifier','<p>Les éléments ne confirment pas clairement le départ.</p>'); }
+        if(step===3){ if(value==='non') render('f','success','Résultat : départ à l’étranger envisageable','<p>Le lien principal avec la Belgique ne paraît plus maintenu.</p>'); else if(value==='incertain') render('f','info','Résultat : clarification nécessaire','<p>Il faut préciser la résidence principale actuelle.</p>'); else render('f','danger','Résultat : maintien probable en Belgique','<p>Un lien de résidence principale semble subsister.</p>'); }
+      }
+    }
+
+    function resetTail(group, from, to){
+      for(let i=from;i<=to;i++){
+        document.querySelectorAll(`[data-group="${group}"][data-step="${i}"]`).forEach(btn => btn.classList.remove('active'));
+        hide(group, i);
+        delete state[group][i];
+      }
+      const res = document.getElementById(`${group}-result`);
+      res.className = 'result hidden';
+      res.innerHTML = '';
+    }
+
+    document.querySelectorAll('[data-group]').forEach(btn => {
+      btn.addEventListener('click', () => handle(btn.dataset.group, Number(btn.dataset.step), btn.dataset.value));
+    });
+  </script>
 </body>
 </html>
