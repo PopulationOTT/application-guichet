@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portail Guichet Population</title>
+<style>
+body{font-family:Arial;margin:0;background:#eef3fb}
+header{background:#0b4ea2;color:white;padding:30px}
+h1{margin:0}
+.container{max-width:1200px;margin:auto;padding:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.card{background:white;border-radius:14px;padding:20px;box-shadow:0 6px 18px rgba(0,0,0,.1)}
+.card h3{color:#0b4ea2;margin-top:0}
+button{background:#ffd200;border:none;padding:12px 16px;border-radius:10px;font-weight:bold;cursor:pointer}
+.section{display:none;margin-top:20px}
+.section.active{display:block}
+.question{font-weight:bold;margin-top:10px}
+.result{margin-top:15px;padding:15px;border-radius:10px}
+.success{background:#dff6e5}
+.warning{background:#fff4cc}
+.danger{background:#fde4e4}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Outil Guichet – Service Population</h1>
+<p>Assistant de décision interne</p>
+</header>
+
+<div class="container">
+
+<div class="grid">
+
+<div class="card">
+<h3>Adresse de référence</h3>
+<p>Vérifier si une adresse de référence est possible.</p>
+<button onclick="openSection('adresse')">Ouvrir</button>
+</div>
+
+<div class="card">
+<h3>Absence temporaire</h3>
+<p>Analyse rapide des conditions d'absence temporaire.</p>
+<button onclick="openSection('absence')">Ouvrir</button>
+</div>
+
+<div class="card">
+<h3>Domiciliation</h3>
+<p>Déterminer si la résidence principale peut être inscrite.</p>
+<button onclick="openSection('domiciliation')">Ouvrir</button>
+</div>
+
+<div class="card">
+<h3>Radiation d'office</h3>
+<p>Analyse des conditions de radiation.</p>
+<button onclick="openSection('radiation')">Ouvrir</button>
+</div>
+
+<div class="card">
+<h3>Enquête de résidence</h3>
+<p>Check-list pour enquête domiciliaire.</p>
+<button onclick="openSection('enquete')">Ouvrir</button>
+</div>
+
+<div class="card">
+<h3>Départ à l'étranger</h3>
+<p>Orientation administrative en cas de départ.</p>
+<button onclick="openSection('etranger')">Ouvrir</button>
+</div>
+
+</div>
+
+<div id="adresse" class="section">
+<h2>Adresse de référence</h2>
+<div class="question">La personne vit-elle réellement à l'adresse ?</div>
+<button onclick="result('adresse','danger','Résultat : domiciliation nécessaire')">Oui</button>
+<button onclick="result('adresse','success','Adresse de référence possible sous conditions')">Non</button>
+<div id="adresse_result"></div>
+</div>
+
+<div id="absence" class="section">
+<h2>Absence temporaire</h2>
+<div class="question">Absence supérieure à 3 mois ?</div>
+<button onclick="result('absence','success','Absence temporaire envisageable')">Oui</button>
+<button onclick="result('absence','warning','Absence trop courte')">Non</button>
+<div id="absence_result"></div>
+</div>
+
+<div id="domiciliation" class="section">
+<h2>Domiciliation</h2>
+<div class="question">La personne habite réellement à l'adresse ?</div>
+<button onclick="result('domiciliation','success','Inscription en résidence principale possible')">Oui</button>
+<button onclick="result('domiciliation','warning','Enquête de résidence conseillée')">Incertain</button>
+<button onclick="result('domiciliation','danger','Refus possible')">Non</button>
+<div id="domiciliation_result"></div>
+</div>
+
+<div id="radiation" class="section">
+<h2>Radiation d'office</h2>
+<div class="question">La personne est-elle introuvable et le logement inoccupé ?</div>
+<button onclick="result('radiation','success','Radiation possible')">Oui</button>
+<button onclick="result('radiation','warning','Enquête complémentaire nécessaire')">Incertain</button>
+<button onclick="result('radiation','danger','Radiation impossible')">Non</button>
+<div id="radiation_result"></div>
+</div>
+
+<div id="enquete" class="section">
+<h2>Enquête de résidence</h2>
+<p>Checklist :</p>
+<ul>
+<li>Présence régulière observée</li>
+<li>Voisins confirment la résidence</li>
+<li>Consommation énergétique cohérente</li>
+<li>Logement occupé</li>
+</ul>
+</div>
+
+<div id="etranger" class="section">
+<h2>Départ à l'étranger</h2>
+<div class="question">La personne déclare un départ définitif ?</div>
+<button onclick="result('etranger','success','Radiation vers l'étranger')">Oui</button>
+<button onclick="result('etranger','warning','Vérification nécessaire')">Incertain</button>
+<button onclick="result('etranger','danger','Maintien inscription Belgique')">Non</button>
+<div id="etranger_result"></div>
+</div>
+
+</div>
+
+<script>
+function openSection(id){
+document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'))
+document.getElementById(id).classList.add('active')
+}
+
+function result(section,type,text){
+const el=document.getElementById(section+'_result')
+el.innerHTML='<div class="result '+type+'">'+text+'</div>'
+}
+</script>
+
+</body>
+</html>
